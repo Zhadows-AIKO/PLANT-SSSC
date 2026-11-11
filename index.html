@@ -1,1 +1,910 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ข้อปฏิบัติเกี่ยวกับการดับเพลิงและการอพยพหนีไฟ </title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Prompt & Kanit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandOrange: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            200: '#fed7aa',
+                            500: '#f97316',
+                            600: '#ea580c',
+                            gradientStart: '#FF5400',
+                            gradientEnd: '#FF9E00',
+                        },
+                        brandYellow: {
+                            light: '#FFFBEA',
+                            DEFAULT: '#FFD000',
+                            dark: '#E0B000',
+                        },
+                        brandCyan: {
+                            light: '#E0F7FA',
+                            DEFAULT: '#00B4D8',
+                            dark: '#0077B6',
+                            deep: '#03045E'
+                        },
+                        brandGreen: {
+                            light: '#E8F8F0',
+                            DEFAULT: '#10B981',
+                            dark: '#059669',
+                            flag: '#00A86B'
+                        },
+                        charcoal: {
+                            900: '#0F172A',
+                            800: '#1E293B',
+                            700: '#334155',
+                            600: '#475569',
+                        }
+                    },
+                    fontFamily: {
+                        prompt: ['Prompt', 'sans-serif'],
+                        kanit: ['Kanit', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
 
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #E2E8F0;
+            color: #0F172A;
+        }
+
+        /* Vivid safety hazard warning diagonal stripes */
+        .hazard-stripe-light {
+            background: repeating-linear-gradient(
+                -45deg,
+                #FFD000,
+                #FFD000 12px,
+                #0F172A 12px,
+                #0F172A 24px
+            );
+        }
+
+        .hazard-stripe-sm {
+            background: repeating-linear-gradient(
+                -45deg,
+                #FFD000,
+                #FFD000 8px,
+                #0F172A 8px,
+                #0F172A 16px
+            );
+        }
+
+        /* Glowing shadow accents for vibrant poster aesthetic */
+        .banner-glow-orange {
+            box-shadow: 0 4px 18px rgba(255, 84, 0, 0.35);
+        }
+        .glow-cyan-card {
+            box-shadow: 0 4px 16px rgba(0, 180, 216, 0.2);
+        }
+        .subtle-card-shadow {
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+        }
+
+        /* Radar Beacon for "You Are Here" */
+        @keyframes radar-ping {
+            0% { transform: scale(0.9); opacity: 0.9; }
+            50% { transform: scale(1.6); opacity: 0.2; }
+            100% { transform: scale(0.9); opacity: 0.9; }
+        }
+        .radar-beacon {
+            transform-origin: center;
+            animation: radar-ping 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* Animated Dashed Evacuation Path */
+        @keyframes moveEvacDash {
+            to { stroke-dashoffset: -40; }
+        }
+        .animated-evac-path {
+            stroke-dasharray: 8, 6;
+            animation: moveEvacDash 1.8s linear infinite;
+        }
+
+        /* Hover on Interactive Bays */
+        .bay-clickable {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .bay-clickable:hover {
+            fill: #BAE6FD !important;
+            fill-opacity: 0.7 !important;
+            stroke: #FF5400 !important;
+            stroke-width: 2.5px !important;
+        }
+
+        /* Strict 16:9 Aspect Ratio Frame */
+        .aspect-16-9-board {
+            aspect-ratio: 16 / 9;
+            width: 100%;
+            max-width: calc(100vh * (16 / 9));
+            max-height: calc(100vw * (9 / 16));
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { 
+                background: #FFFFFF !important; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .aspect-16-9-board { 
+                width: 100vw !important; 
+                height: 56.25vw !important; 
+                max-width: none !important; 
+                max-height: none !important; 
+                border: 2px solid #0F172A !important; 
+                box-shadow: none !important;
+                border-radius: 0 !important;
+            }
+            @page {
+                size: landscape;
+                margin: 3mm;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-200 p-1 sm:p-2 md:p-3 flex flex-col items-center justify-center">
+
+    <!-- Top Toolbar (No Print) -->
+    <div class="no-print w-full max-w-[1600px] flex flex-wrap items-center justify-between gap-2 mb-2 bg-white/95 border border-slate-300 rounded-xl px-3 py-1.5 shadow-md backdrop-blur-md">
+        <div class="flex items-center gap-2.5">
+            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-r from-brandOrange-gradientStart to-brandOrange-gradientEnd text-white font-bold text-sm shadow">
+                <i class="fa-solid fa-sun text-yellow-200"></i>
+            </span>
+            <div>
+                <p class="font-kanit font-extrabold text-charcoal-900 text-xs sm:text-sm">
+                    PLANT SSSC#1 • ป้ายแผนผังดับเพลิงและอพยพหนีไฟ 
+                </p>
+                <p class="text-[10px] text-brandCyan-dark font-medium"></p>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="flex flex-wrap items-center gap-2">
+            <!-- Filter Layer -->
+            <div class="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-300 text-[11px] font-kanit">
+                <button onclick="setLayerFilter('all')" id="filter-all" class="filter-btn px-2.5 py-0.5 rounded bg-brandCyan text-white font-bold shadow-sm transition">ทั้งหมด</button>
+                <button onclick="setLayerFilter('routes')" id="filter-routes" class="filter-btn px-2.5 py-0.5 rounded text-charcoal-700 hover:text-charcoal-900 transition">เส้นทางหนีไฟ</button>
+                <button onclick="setLayerFilter('extinguishers')" id="filter-extinguishers" class="filter-btn px-2.5 py-0.5 rounded text-charcoal-700 hover:text-charcoal-900 transition">ถังดับเพลิง</button>
+                <button onclick="setLayerFilter('alarms')" id="filter-alarms" class="filter-btn px-2.5 py-0.5 rounded text-charcoal-700 hover:text-charcoal-900 transition">สัญญาณเตือน/สายฉีด</button>
+            </div>
+
+            <button onclick="toggleEditMode()" id="editToggleBtn" class="flex items-center gap-1 px-3 py-1 rounded-lg border border-brandOrange-gradientStart text-brandOrange-gradientStart bg-brandOrange-50 text-[11px] font-kanit font-bold hover:bg-brandOrange-100 transition active:scale-95 shadow-sm">
+                <i class="fa-solid fa-pen-to-square"></i> <span id="editText">แก้ไขผู้นำอพยพ</span>
+            </button>
+
+            <button onclick="toggleFullScreen()" class="flex items-center gap-1 px-3 py-1 rounded-lg border border-brandCyan-dark text-brandCyan-dark bg-cyan-50 text-[11px] font-kanit font-bold hover:bg-cyan-100 transition active:scale-95 shadow-sm">
+                <i class="fa-solid fa-expand"></i> เต็มจอ 16:9
+            </button>
+
+            <button onclick="window.print()" class="flex items-center gap-1.5 px-3.5 py-1 rounded-lg bg-gradient-to-r from-brandOrange-gradientStart to-brandOrange-gradientEnd text-white font-kanit font-black text-[11px] shadow-md hover:brightness-105 active:scale-95 transition">
+                <i class="fa-solid fa-print text-yellow-200"></i> พิมพ์ป้ายความปลอดภัย
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN DISPLAY POSTER (STRICT 16:9 WIDESCREEN RATIO - BRIGHT THEME) -->
+    <main id="boardContainer" class="aspect-16-9-board bg-[#F8FAFC] border-4 border-charcoal-900 rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl relative flex flex-col justify-between">
+        
+        <!-- Top Hazard Stripes -->
+        <div class="hazard-stripe-light h-2 sm:h-2.5 w-full border-b-2 border-charcoal-900 shrink-0"></div>
+
+        <!-- MAIN HEADER (Vibrant Poster Orange Gradient with Cyan/Yellow Highlights) -->
+        <header class="relative px-3 sm:px-5 py-2 sm:py-2.5 bg-gradient-to-r from-[#FF4E00] via-[#FF7A00] to-[#FFA800] border-b-2 border-charcoal-900 shrink-0 shadow-md">
+            <div class="flex items-center justify-between gap-2">
+                
+                <!-- Title Group -->
+                <div class="flex items-center gap-2.5 sm:gap-3.5">
+                    <div class="flex flex-col items-center justify-center p-1.5 sm:p-2 bg-charcoal-900 rounded-xl border-2 border-brandYellow text-white shrink-0 shadow-md">
+                        <i class="fa-solid fa-person-running text-xl sm:text-2xl text-brandYellow animate-pulse"></i>
+                        <span class="text-[7px] sm:text-[8px] font-kanit font-black tracking-wider uppercase text-white">SAFETY</span>
+                    </div>
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.2 rounded-full bg-charcoal-900/90 border border-brandYellow text-brandYellow text-[9px] sm:text-[10px] font-kanit font-extrabold shadow-sm">
+                            <i class="fa-solid fa-shield-halved text-cyan-300"></i> ระบบบริหารจัดการความปลอดภัยและตอบสนองอัคคีภัย
+                        </div>
+                        <h1 class="text-base sm:text-xl md:text-2xl lg:text-3xl font-kanit font-black tracking-tight text-white drop-shadow-md leading-tight">
+                            ป้ายข้อปฏิบัติเกี่ยวกับการดับเพลิง<span class="text-brandYellow">และการอพยพหนีไฟ</span>
+                        </h1>
+                        <p class="font-kanit text-[9px] sm:text-[11px] tracking-wider uppercase text-slate-900 font-black flex items-center gap-1.5">
+                            <span class="inline-block w-2 h-2 rounded-full bg-brandYellow border border-charcoal-900"></span>
+                            FIRE ESCAPE PLAN : PLANT SSSC#1 (SCALE 1:250) • WIDESCREEN 16:9
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right Emergency Alert Badge (High-Contrast White & Cyan) -->
+                <div class="flex items-center gap-2 bg-white/95 border-2 border-charcoal-900 px-3 py-1.5 rounded-xl shadow-lg shrink-0">
+                    <div class="text-right">
+                        <p class="text-[9px] sm:text-[10px] text-red-600 font-kanit font-black flex items-center justify-end gap-1">
+                            <i class="fa-solid fa-triangle-exclamation text-brandOrange-500 animate-bounce"></i> เมื่อเกิดเหตุเพลิงไหม้
+                        </p>
+                        <p class="text-[11px] sm:text-xs md:text-sm font-kanit font-black text-charcoal-900 leading-tight">
+                            ตั้งสติ ปฏิบัติตามแผนทันที
+                        </p>
+                    </div>
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-brandGreen text-white rounded-lg flex items-center justify-center text-base sm:text-xl font-black shadow border border-emerald-600">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                </div>
+
+            </div>
+        </header>
+
+        <!-- MAIN 3-COLUMN WORKSPACE (16:9 RATIO FIT) -->
+        <div class="flex-1 p-2 sm:p-2.5 md:p-3 grid grid-cols-12 gap-2 sm:gap-2.5 overflow-hidden items-stretch bg-[#F1F5F9]">
+            
+            <!-- LEFT COLUMN: PASS PROTOCOL + WARDEN & RULES (~25% / 3 Cols) -->
+            <aside class="col-span-3 flex flex-col justify-between gap-1.5 sm:gap-2 overflow-hidden">
+                
+                <!-- 1. P.A.S.S. CARD (Bright White Container with Vivid Orange Accents) -->
+                <div class="bg-white border-2 border-brandOrange-500 rounded-xl p-2 sm:p-2.5 shadow-sm flex flex-col justify-between flex-1">
+                    <div class="flex items-center justify-between pb-1 mb-1 border-b-2 border-orange-200 shrink-0">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-6 h-6 rounded-lg bg-gradient-to-r from-brandOrange-gradientStart to-brandOrange-gradientEnd text-white flex items-center justify-center text-xs font-black shadow-sm">
+                                <i class="fa-solid fa-fire-extinguisher"></i>
+                            </span>
+                            <div>
+                                <h3 class="font-kanit font-extrabold text-charcoal-900 text-xs sm:text-sm leading-none">วิธีใช้ถังดับเพลิง (PASS)</h3>
+                                <p class="text-[8px] sm:text-[9px] text-brandOrange-600 font-bold font-kanit">4 ขั้นตอนระงับเหตุเพลิงไหม้</p>
+                            </div>
+                        </div>
+                        <span class="bg-brandOrange-100 text-brandOrange-600 font-kanit text-[8px] font-black px-1.5 py-0.2 rounded border border-orange-300">เบื้องต้น</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-1 font-kanit flex-1 justify-center">
+                        <!-- P -->
+                        <div class="bg-orange-50/80 border border-orange-200 rounded-lg p-1 sm:p-1.5 flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-md bg-gradient-to-br from-brandOrange-gradientStart to-red-600 text-white font-black text-xs sm:text-sm flex items-center justify-center shrink-0 shadow-sm">P</span>
+                            <div class="flex-1 leading-tight">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-extrabold text-charcoal-900 text-[10px] sm:text-[11px]">ดึงสลักนิรภัย</h4>
+                                    <span class="text-[8px] text-brandOrange-600 font-black uppercase">PULL</span>
+                                </div>
+                                <p class="text-[8px] sm:text-[9px] text-charcoal-600">ดึงสลักล็อคคันบีบออกทันที</p>
+                            </div>
+                        </div>
+
+                        <!-- A -->
+                        <div class="bg-amber-50/80 border border-amber-300 rounded-lg p-1 sm:p-1.5 flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-md bg-brandYellow text-charcoal-900 font-black text-xs sm:text-sm flex items-center justify-center shrink-0 shadow-sm border border-amber-400">A</span>
+                            <div class="flex-1 leading-tight">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-extrabold text-charcoal-900 text-[10px] sm:text-[11px]">เล็งหัวฉีด</h4>
+                                    <span class="text-[8px] text-amber-700 font-black uppercase">AIM</span>
+                                </div>
+                                <p class="text-[8px] sm:text-[9px] text-charcoal-600">ชี้หัวฉีดไปที่ฐานของเปลวไฟ</p>
+                            </div>
+                        </div>
+
+                        <!-- S -->
+                        <div class="bg-orange-50/80 border border-orange-200 rounded-lg p-1 sm:p-1.5 flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-md bg-gradient-to-br from-brandOrange-gradientStart to-red-600 text-white font-black text-xs sm:text-sm flex items-center justify-center shrink-0 shadow-sm">S</span>
+                            <div class="flex-1 leading-tight">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-extrabold text-charcoal-900 text-[10px] sm:text-[11px]">บีบคันบีบ</h4>
+                                    <span class="text-[8px] text-brandOrange-600 font-black uppercase">SQUEEZE</span>
+                                </div>
+                                <p class="text-[8px] sm:text-[9px] text-charcoal-600">กดคันบีบให้น้ำยาพุ่งอย่างต่อเนื่อง</p>
+                            </div>
+                        </div>
+
+                        <!-- S -->
+                        <div class="bg-amber-50/80 border border-amber-300 rounded-lg p-1 sm:p-1.5 flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-md bg-brandYellow text-charcoal-900 font-black text-xs sm:text-sm flex items-center justify-center shrink-0 shadow-sm border border-amber-400">S</span>
+                            <div class="flex-1 leading-tight">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="font-extrabold text-charcoal-900 text-[10px] sm:text-[11px]">ส่ายหัวฉีด</h4>
+                                    <span class="text-[8px] text-amber-700 font-black uppercase">SWEEP</span>
+                                </div>
+                                <p class="text-[8px] sm:text-[9px] text-charcoal-600">กวาดซ้าย-ขวาให้ทั่วบริเวณฐานเพลิง</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-1 mt-1 bg-brandOrange-100 border border-orange-300 rounded text-[8px] sm:text-[9px] font-kanit font-bold text-brandOrange-600 flex items-center gap-1.5 shrink-0">
+                        <i class="fa-solid fa-wind text-brandOrange-gradientStart"></i>
+                        <span>ยืนอยู่เหนือลมเสมอ เว้นระยะ 2-3 เมตร</span>
+                    </div>
+                </div>
+
+                <!-- 2. WARDEN & REMINDERS (Bright Card with Cyan & Yellow Accents) -->
+                <div class="bg-white border-2 border-brandCyan rounded-xl p-2 sm:p-2.5 shadow-sm flex flex-col justify-between shrink-0">
+                    <div class="flex items-center justify-between pb-1 mb-1 border-b-2 border-cyan-100">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-5 h-5 rounded-md bg-brandCyan text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                                <i class="fa-solid fa-bullhorn"></i>
+                            </span>
+                            <h3 class="font-kanit font-extrabold text-charcoal-900 text-[11px] sm:text-xs">ผู้นำอพยพหนีไฟ</h3>
+                        </div>
+                        <span class="text-[8px] bg-cyan-100 text-brandCyan-dark px-2 py-0.2 rounded font-kanit font-extrabold">PLANT SSSC#1</span>
+                    </div>
+
+                    <div class="space-y-1 font-kanit text-[9px] sm:text-[10px] bg-slate-50 p-1.5 rounded-lg border border-slate-200">
+                        <div class="flex items-center justify-between">
+                            <span class="text-charcoal-600 font-medium">ชื่อ:</span>
+                            <span id="dispName" class="font-bold text-charcoal-900">นายสมชาย มั่นคงปลอดภัย</span>
+                            <input id="inputName" type="text" value="นายสมชาย มั่นคงปลอดภัย" class="hidden w-28 bg-white text-charcoal-900 px-1 py-0.2 rounded border-2 border-brandOrange-500 text-[9px]">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-charcoal-600 font-medium">โทรศัพท์:</span>
+                            <span id="dispPhone" class="font-bold text-brandOrange-600">02-xxx-xxxx ต่อ 101</span>
+                            <input id="inputPhone" type="text" value="02-xxx-xxxx ต่อ 101" class="hidden w-28 bg-white text-charcoal-900 px-1 py-0.2 rounded border-2 border-brandOrange-500 text-[9px]">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-charcoal-600 font-medium">ฝ่าย/หน่วยงาน:</span>
+                            <span id="dispDept" class="font-bold text-brandCyan-dark">ฝ่ายความปลอดภัย (จป.)</span>
+                            <input id="inputDept" type="text" value="ฝ่ายความปลอดภัย (จป.)" class="hidden w-28 bg-white text-charcoal-900 px-1 py-0.2 rounded border-2 border-brandOrange-500 text-[9px]">
+                        </div>
+                    </div>
+
+                    <div class="mt-1 pt-1 border-t border-slate-200 text-[8px] sm:text-[9px] text-charcoal-700 font-kanit space-y-0.5">
+                        <p><i class="fa-solid fa-circle-check text-brandGreen mr-1"></i>อย่าตื่นตระหนก มีสติ ไม่ส่งเสียงดัง</p>
+                        <p><i class="fa-solid fa-circle-check text-brandGreen mr-1"></i>ช่วยเหลือผู้บาดเจ็บตามกำลังความสามารถ</p>
+                        <p><i class="fa-solid fa-circle-check text-brandGreen mr-1"></i>รอตรวจนับยอด ห้ามกลับเข้าอาคารโดยพลการ</p>
+                    </div>
+                </div>
+
+            </aside>
+
+            <!-- CENTER MAIN COLUMN: PLANT SSSC#1 BRIGHT ARCHITECTURAL BLUEPRINT (~50% / 6 Cols) -->
+            <main class="col-span-6 bg-white border-2 border-charcoal-900 rounded-xl sm:rounded-2xl p-1.5 sm:p-2.5 flex flex-col justify-between shadow-md relative overflow-hidden">
+                
+                <!-- Floor Plan Info Header Bar -->
+                <div class="flex items-center justify-between pb-1 border-b-2 border-slate-200 shrink-0">
+                    <div class="flex items-center gap-1.5">
+                        <span class="px-2 py-0.5 bg-gradient-to-r from-brandOrange-gradientStart to-brandOrange-gradientEnd text-white font-kanit font-black text-[9px] sm:text-[10px] rounded shadow-sm">LAYOUT</span>
+                        <h2 class="font-kanit font-black text-xs sm:text-sm text-charcoal-900 truncate">
+                            แผนผังอาคารและเส้นทางหนีไฟ : PLANT SSSC#1
+                        </h2>
+                    </div>
+                    <div class="flex items-center gap-2 text-[9px] sm:text-[10px] font-kanit shrink-0">
+                        <span class="text-charcoal-600 hidden sm:inline font-bold"><i class="fa-solid fa-ruler-combined text-brandCyan-dark mr-1"></i>SCALE 1:250</span>
+                        <span class="bg-emerald-100 text-brandGreen-dark font-black px-2 py-0.2 rounded border border-emerald-300" id="currentLocationBadge">ตำแหน่ง: Bay 4B</span>
+                    </div>
+                </div>
+
+                <!-- SVG RENDER: Crisp White Technical Blueprint Background with Clean Contrast -->
+                <div class="w-full flex-1 bg-[#FFFFFF] rounded-lg border-2 border-slate-300 relative overflow-hidden flex items-center justify-center p-0.5 my-1">
+                    
+                    <svg id="ssscPlanSvg" viewBox="0 0 1000 640" class="w-full h-full select-none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="brightAsmbGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#00C853"/>
+                                <stop offset="100%" stop-color="#008E3D"/>
+                            </linearGradient>
+
+                            <linearGradient id="officeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#EFF6FF"/>
+                                <stop offset="100%" stop-color="#DBEAFE"/>
+                            </linearGradient>
+
+                            <marker id="brightEvacArrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 1 L 8 5 L 0 9 z" fill="#00A86B" />
+                            </marker>
+                        </defs>
+
+                        <!-- Outer Roads & Concentration Area -->
+                        <rect x="40" y="52" width="940" height="32" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="6,6"/>
+                        <text x="500" y="72" font-family="Prompt" font-size="10" font-weight="bold" fill="#64748B" text-anchor="middle" letter-spacing="3">MAIN ENTRANCE ROAD (CONCENTRATION AREA)</text>
+
+                        <!-- ASSEMBLY POINT (Top Left - High Visibility Green & White) -->
+                        <g id="assemblyPointGroup" transform="translate(60, 8)">
+                            <rect x="0" y="0" width="225" height="38" rx="6" fill="url(#brightAsmbGrad)" stroke="#0F172A" stroke-width="2" filter="drop-shadow(0 2px 6px rgba(0,0,0,0.15))"/>
+                            <rect x="7" y="6" width="26" height="26" rx="4" fill="#FFFFFF"/>
+                            <text x="20" y="24" font-family="FontAwesome" font-size="14" fill="#008E3D" text-anchor="middle"></text>
+                            <text x="128" y="17" font-family="Kanit" font-size="12" font-weight="900" fill="#FFFFFF" text-anchor="middle">จุดรวมพล (ASSEMBLY POINT)</text>
+                            <text x="128" y="30" font-family="Prompt" font-size="9" font-weight="bold" fill="#FFD000" text-anchor="middle">ลานโล่งหน้าโรงงาน (NORTH-WEST ZONE 1)</text>
+                            <path d="M 172 38 L 172 52" stroke="#00C853" stroke-width="3.5" stroke-dasharray="3,3"/>
+                        </g>
+
+                        <!-- COMPASS (Top Right) -->
+                        <g transform="translate(935, 36)">
+                            <circle cx="0" cy="0" r="18" fill="#FFFFFF" stroke="#0F172A" stroke-width="2" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.1))"/>
+                            <polygon points="0,-14 3,-2 0,0 -3,-2" fill="#FF5400"/>
+                            <polygon points="0,14 3,2 0,0 -3,2" fill="#64748B"/>
+                            <polygon points="-14,0 -2,-3 0,0 -2,3" fill="#64748B"/>
+                            <polygon points="14,0 2,-3 0,0 2,3" fill="#64748B"/>
+                            <circle cx="0" cy="0" r="2.5" fill="#FFD000"/>
+                            <text x="0" y="-17" fill="#0F172A" font-size="9" font-weight="900" text-anchor="middle" font-family="Kanit">N</text>
+                        </g>
+
+                        <!-- MAIN FACTORY OUTLINE -->
+                        <path d="M 135 95 L 870 95 L 890 270 L 890 340 L 850 340 L 850 560 L 420 560 L 390 370 L 135 360 Z" 
+                              fill="#FAFAFA" stroke="#0F172A" stroke-width="3"/>
+
+                        <!-- WEST OFFICES & SERVICES (Left Strip) -->
+                        <polygon points="50,100 135,95 135,360 45,355" fill="url(#officeGrad)" stroke="#3B82F6" stroke-width="1.5"/>
+                        <text x="85" y="140" font-family="Prompt" font-size="8.5" font-weight="bold" fill="#1E3A8A" text-anchor="middle">GUARD</text>
+                        <text x="85" y="185" font-family="Prompt" font-size="8.5" font-weight="bold" fill="#1E3A8A" text-anchor="middle">OFFICE</text>
+                        <text x="85" y="230" font-family="Prompt" font-size="8.5" font-weight="bold" fill="#1E3A8A" text-anchor="middle">LIBRARY</text>
+                        <text x="85" y="280" font-family="Prompt" font-size="8.5" font-weight="bold" fill="#1E3A8A" text-anchor="middle">M/T RM</text>
+                        <text x="85" y="335" font-family="Prompt" font-size="8.5" font-weight="bold" fill="#1E3A8A" text-anchor="middle">TOILET</text>
+
+                        <!-- NORTH OFFICE -->
+                        <rect x="145" y="100" width="165" height="42" fill="#E0F2FE" stroke="#0284C7" stroke-width="1.5"/>
+                        <text x="227" y="125" font-family="Prompt" font-size="10" fill="#0369A1" text-anchor="middle" font-weight="bold">MAIN OFFICE</text>
+
+                        <!-- Major Bay Dividing Lines -->
+                        <line x1="345" y1="95" x2="345" y2="355" stroke="#94A3B8" stroke-width="2" stroke-dasharray="5,4"/>
+                        <line x1="420" y1="355" x2="850" y2="355" stroke="#94A3B8" stroke-width="2.5"/>
+
+                        <!-- BAYS 1A - 5A -->
+                        <g id="bayGroupA">
+                            <rect onclick="setYouAreHere(365, 125, 'Bay 1A / Slitter')" class="bay-clickable" x="345" y="100" width="175" height="50" fill="#F8FAFC" stroke="#CBD5E1" rx="4"/>
+                            <circle cx="365" cy="125" r="12" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+                            <text x="365" y="129" font-family="Kanit" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">1A</text>
+                            <text x="440" y="120" font-family="Prompt" font-size="8.5" font-weight="bold" fill="#475569">SL-3 / SE-14</text>
+                            
+                            <rect onclick="setYouAreHere(200, 175, 'Bay 2A')" class="bay-clickable" x="145" y="148" width="190" height="40" fill="#F8FAFC" stroke="#CBD5E1" rx="4"/>
+                            <circle cx="200" cy="172" r="12" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+                            <text x="200" y="176" font-family="Kanit" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">2A</text>
+
+                            <rect onclick="setYouAreHere(200, 220, 'Bay 3A')" class="bay-clickable" x="145" y="195" width="190" height="40" fill="#F8FAFC" stroke="#CBD5E1" rx="4"/>
+                            <circle cx="200" cy="218" r="12" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+                            <text x="200" y="222" font-family="Kanit" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">3A</text>
+
+                            <rect onclick="setYouAreHere(200, 268, 'Bay 4A')" class="bay-clickable" x="145" y="242" width="190" height="40" fill="#F8FAFC" stroke="#CBD5E1" rx="4"/>
+                            <circle cx="200" cy="266" r="12" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+                            <text x="200" y="270" font-family="Kanit" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">4A</text>
+
+                            <rect onclick="setYouAreHere(200, 318, 'Bay 5A')" class="bay-clickable" x="145" y="290" width="190" height="52" fill="#F8FAFC" stroke="#CBD5E1" rx="4"/>
+                            <circle cx="200" cy="318" r="12" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+                            <text x="200" y="322" font-family="Kanit" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">5A</text>
+                            <text x="260" y="328" font-family="Prompt" font-size="8.5" font-weight="bold" fill="#64748B">SE-27 / SE-29</text>
+                        </g>
+
+                        <!-- BAYS 1B - 7B (Middle Bays) -->
+                        <g id="bayGroupB">
+                            <circle onclick="setYouAreHere(520, 132, 'Bay 7B')" class="bay-clickable" cx="520" cy="132" r="12" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+                            <text x="520" y="136" font-family="Kanit" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">7B</text>
+                            
+                            <circle onclick="setYouAreHere(565, 132, 'Bay 6B')" class="bay-clickable" cx="565" cy="132" r="12" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+                            <text x="565" y="136" font-family="Kanit" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">6B</text>
+                            
+                            <circle onclick="setYouAreHere(610, 132, 'Bay 5B')" class="bay-clickable" cx="610" cy="132" r="12" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+                            <text x="610" y="136" font-family="Kanit" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">5B</text>
+                            
+                            <!-- 4B Current Selected Target -->
+                            <circle onclick="setYouAreHere(655, 132, 'Bay 4B')" class="bay-clickable" cx="655" cy="132" r="12" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+                            <text x="655" y="136" font-family="Kanit" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">4B</text>
+                            
+                            <circle onclick="setYouAreHere(700, 132, 'Bay 3B')" class="bay-clickable" cx="700" cy="132" r="12" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+                            <text x="700" y="136" font-family="Kanit" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">3B</text>
+                            
+                            <circle onclick="setYouAreHere(745, 132, 'Bay 2B')" class="bay-clickable" cx="745" cy="132" r="12" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+                            <text x="745" y="136" font-family="Kanit" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">2B</text>
+                            
+                            <circle onclick="setYouAreHere(795, 132, 'Bay 1B')" class="bay-clickable" cx="795" cy="132" r="12" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+                            <text x="795" y="136" font-family="Kanit" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle">1B</text>
+
+                            <!-- Bay B Center Machinery area -->
+                            <rect x="545" y="160" width="260" height="145" fill="#F1F5F9" stroke="#94A3B8" stroke-dasharray="4,4" rx="4"/>
+                            <text x="675" y="235" font-family="Kanit" font-size="11" fill="#0284C7" text-anchor="middle" font-weight="bold">MAIN STORAGE / TRANSVERSE AREA</text>
+                            <text x="675" y="252" font-family="Prompt" font-size="8.5" fill="#64748B" text-anchor="middle" font-weight="bold">SE-12 / LVR-2 / SQ-38</text>
+                        </g>
+
+                        <!-- EAST SERVICE WING -->
+                        <rect x="815" y="100" width="60" height="235" fill="#FEF2F2" stroke="#F87171" stroke-width="1.5"/>
+                        <text x="845" y="125" font-family="Prompt" font-size="8" font-weight="bold" fill="#DC2626" text-anchor="middle">FIRE PUMP</text>
+                        <text x="845" y="155" font-family="Prompt" font-size="8" font-weight="bold" fill="#475569" text-anchor="middle">MAINT.</text>
+                        <text x="845" y="190" font-family="Prompt" font-size="8" font-weight="bold" fill="#475569" text-anchor="middle">TOOL RM</text>
+                        <text x="845" y="230" font-family="Prompt" font-size="8" font-weight="bold" fill="#475569" text-anchor="middle">STORE</text>
+
+                        <!-- BAYS 1C - 8C (Lower Zone) -->
+                        <g id="bayGroupC">
+                            <rect x="360" y="390" width="55" height="165" fill="#F1F5F9" stroke="#CBD5E1"/>
+                            <text x="388" y="475" font-family="Prompt" font-size="8.5" font-weight="bold" fill="#475569" text-anchor="middle" transform="rotate(-90 388 475)">WOODSTOCK AREA</text>
+
+                            <rect x="425" y="380" width="48" height="170" fill="#F1F5F9" stroke="#CBD5E1"/>
+                            <text x="449" y="465" font-family="Prompt" font-size="8.5" font-weight="bold" fill="#475569" text-anchor="middle" transform="rotate(-90 449 465)">HARD ROLL</text>
+
+                            <circle onclick="setYouAreHere(465, 405, 'Bay 8C')" class="bay-clickable" cx="465" cy="405" r="10" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+                            <text x="465" y="409" font-family="Kanit" font-size="8" font-weight="bold" fill="#FFFFFF" text-anchor="middle">8C</text>
+                            
+                            <circle onclick="setYouAreHere(515, 405, 'Bay 7C')" class="bay-clickable" cx="515" cy="405" r="10" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+                            <text x="515" y="409" font-family="Kanit" font-size="8" font-weight="bold" fill="#FFFFFF" text-anchor="middle">7C</text>
+
+                            <circle onclick="setYouAreHere(565, 405, 'Bay 6C')" class="bay-clickable" cx="565" cy="405" r="10" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+                            <text x="565" y="409" font-family="Kanit" font-size="8" font-weight="bold" fill="#FFFFFF" text-anchor="middle">6C</text>
+
+                            <circle onclick="setYouAreHere(610, 405, 'Bay 5C')" class="bay-clickable" cx="610" cy="405" r="10" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+                            <text x="610" y="409" font-family="Kanit" font-size="8" font-weight="bold" fill="#FFFFFF" text-anchor="middle">5C</text>
+
+                            <circle onclick="setYouAreHere(655, 405, 'Bay 4C')" class="bay-clickable" cx="655" cy="405" r="10" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+                            <text x="655" y="409" font-family="Kanit" font-size="8" font-weight="bold" fill="#FFFFFF" text-anchor="middle">4C</text>
+
+                            <circle onclick="setYouAreHere(700, 405, 'Bay 3C')" class="bay-clickable" cx="700" cy="405" r="10" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+                            <text x="700" y="409" font-family="Kanit" font-size="8" font-weight="bold" fill="#FFFFFF" text-anchor="middle">3C</text>
+
+                            <circle onclick="setYouAreHere(745, 405, 'Bay 2C')" class="bay-clickable" cx="745" cy="405" r="10" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+                            <text x="745" y="409" font-family="Kanit" font-size="8" font-weight="bold" fill="#FFFFFF" text-anchor="middle">2C</text>
+
+                            <circle onclick="setYouAreHere(795, 405, 'Bay 1C')" class="bay-clickable" cx="795" cy="405" r="10" fill="#0284C7" stroke="#0F172A" stroke-width="1.5"/>
+                            <text x="795" y="409" font-family="Kanit" font-size="8" font-weight="bold" fill="#FFFFFF" text-anchor="middle">1C</text>
+
+                            <!-- Machine SL-5 (Production Core) -->
+                            <rect x="590" y="440" width="130" height="46" fill="#FEF3C7" stroke="#F59E0B" stroke-width="2" rx="4"/>
+                            <text x="655" y="463" font-family="Kanit" font-size="11" font-weight="900" fill="#92400E" text-anchor="middle">SL-5 MACHINE</text>
+                            <text x="655" y="477" font-family="Prompt" font-size="8.5" font-weight="bold" fill="#B45309" text-anchor="middle">MAIN PRODUCTION</text>
+
+                            <rect x="580" y="505" width="60" height="42" fill="#F8FAFC" stroke="#94A3B8"/>
+                            <text x="610" y="530" font-family="Prompt" font-size="8.5" font-weight="bold" fill="#475569" text-anchor="middle">WORK SHOP</text>
+
+                            <rect x="645" y="505" width="65" height="42" fill="#F8FAFC" stroke="#94A3B8"/>
+                            <text x="677" y="530" font-family="Prompt" font-size="8.5" font-weight="bold" fill="#475569" text-anchor="middle">TASK FORCE</text>
+                        </g>
+
+                        <!-- CAR PARK & WATER TOWER -->
+                        <g transform="translate(550, 575)">
+                            <rect x="0" y="0" width="85" height="26" fill="#F1F5F9" stroke="#94A3B8" rx="3"/>
+                            <text x="42" y="16" font-family="Prompt" font-size="9" font-weight="bold" fill="#475569" text-anchor="middle">CAR PARK</text>
+
+                            <rect x="90" y="0" width="95" height="26" fill="#F1F5F9" stroke="#94A3B8" rx="3"/>
+                            <text x="137" y="16" font-family="Prompt" font-size="8" font-weight="bold" fill="#475569" text-anchor="middle">WTR TREATMENT</text>
+
+                            <rect x="195" y="-8" width="75" height="38" fill="#E0F2FE" stroke="#0284C7" stroke-width="1.5" rx="4"/>
+                            <text x="232" y="9" font-family="Kanit" font-size="9" font-weight="900" fill="#0369A1" text-anchor="middle">WATER</text>
+                            <text x="232" y="21" font-family="Kanit" font-size="9" font-weight="900" fill="#0369A1" text-anchor="middle">TOWER</text>
+                        </g>
+
+                        <!-- EMERGENCY EXITS (Green Flags) -->
+                        <g id="layerExits">
+                            <g transform="translate(520, 85)"><polygon points="0,9 5,0 -5,0" fill="#00A86B"/><text x="0" y="-2" font-family="Kanit" font-size="7.5" font-weight="900" fill="#008E3D" text-anchor="middle">EXIT</text></g>
+                            <g transform="translate(610, 85)"><polygon points="0,9 5,0 -5,0" fill="#00A86B"/><text x="0" y="-2" font-family="Kanit" font-size="7.5" font-weight="900" fill="#008E3D" text-anchor="middle">EXIT</text></g>
+                            <g transform="translate(655, 85)"><polygon points="0,9 5,0 -5,0" fill="#00A86B"/><text x="0" y="-2" font-family="Kanit" font-size="7.5" font-weight="900" fill="#008E3D" text-anchor="middle">EXIT</text></g>
+                            <g transform="translate(700, 85)"><polygon points="0,9 5,0 -5,0" fill="#00A86B"/><text x="0" y="-2" font-family="Kanit" font-size="7.5" font-weight="900" fill="#008E3D" text-anchor="middle">EXIT</text></g>
+                            <g transform="translate(745, 85)"><polygon points="0,9 5,0 -5,0" fill="#00A86B"/><text x="0" y="-2" font-family="Kanit" font-size="7.5" font-weight="900" fill="#008E3D" text-anchor="middle">EXIT</text></g>
+                            <g transform="translate(790, 85)"><polygon points="0,9 5,0 -5,0" fill="#00A86B"/><text x="0" y="-2" font-family="Kanit" font-size="7.5" font-weight="900" fill="#008E3D" text-anchor="middle">EXIT</text></g>
+
+                            <g transform="translate(140, 155)"><polygon points="0,-5 9,0 0,5" fill="#00A86B"/><text x="-12" y="3" font-family="Kanit" font-size="7.5" font-weight="900" fill="#008E3D">EXIT</text></g>
+                            <g transform="translate(140, 250)"><polygon points="0,-5 9,0 0,5" fill="#00A86B"/><text x="-12" y="3" font-family="Kanit" font-size="7.5" font-weight="900" fill="#008E3D">EXIT</text></g>
+                            <g transform="translate(140, 320)"><polygon points="0,-5 9,0 0,5" fill="#00A86B"/><text x="-12" y="3" font-family="Kanit" font-size="7.5" font-weight="900" fill="#008E3D">EXIT</text></g>
+
+                            <g transform="translate(520, 355)"><polygon points="0,-5 0,5 9,0" fill="#00A86B"/></g>
+                            <g transform="translate(670, 560)"><polygon points="-5,0 5,0 0,9" fill="#00A86B"/><text x="0" y="18" font-family="Kanit" font-size="7.5" font-weight="900" fill="#008E3D" text-anchor="middle">EXIT</text></g>
+                        </g>
+
+                        <!-- EVACUATION ROUTES (High-contrast emerald arrows) -->
+                        <g id="layerRoutes">
+                            <path d="M 800 75 L 172 75 L 172 42" fill="none" stroke="#00C853" stroke-width="4.5" class="animated-evac-path" marker-end="url(#brightEvacArrow)"/>
+                            <path d="M 235 330 L 235 145 L 320 145 L 320 75" fill="none" stroke="#00B4D8" stroke-width="3" class="animated-evac-path"/>
+                            <path d="M 520 270 L 520 95" fill="none" stroke="#00C853" stroke-width="3" class="animated-evac-path"/>
+                            <path d="M 610 270 L 610 95" fill="none" stroke="#00C853" stroke-width="3" class="animated-evac-path"/>
+                            <path d="M 655 270 L 655 95" fill="none" stroke="#00C853" stroke-width="3" class="animated-evac-path"/>
+                            <path d="M 745 270 L 745 95" fill="none" stroke="#00C853" stroke-width="3" class="animated-evac-path"/>
+                            <path d="M 655 510 L 655 365 L 520 365 L 520 95" fill="none" stroke="#00C853" stroke-width="3.5" class="animated-evac-path"/>
+                        </g>
+
+                        <!-- FIRE EXTINGUISHERS (Red & Orange Badges) -->
+                        <g id="layerExtinguishers">
+                            <!-- Halotron (Orange Solid) -->
+                            <g transform="translate(190, 250)"><circle cx="0" cy="0" r="7" fill="#FF5400" stroke="#0F172A" stroke-width="1.5"/><text x="0" y="2.5" font-family="FontAwesome" font-size="7" fill="#FFFFFF" text-anchor="middle"></text></g>
+                            <g transform="translate(490, 465)"><circle cx="0" cy="0" r="7" fill="#FF5400" stroke="#0F172A" stroke-width="1.5"/><text x="0" y="2.5" font-family="FontAwesome" font-size="7" fill="#FFFFFF" text-anchor="middle"></text></g>
+                            <g transform="translate(830, 215)"><circle cx="0" cy="0" r="7" fill="#FF5400" stroke="#0F172A" stroke-width="1.5"/><text x="0" y="2.5" font-family="FontAwesome" font-size="7" fill="#FFFFFF" text-anchor="middle"></text></g>
+                            
+                            <!-- CO2 (Red Double Ring) -->
+                            <g transform="translate(250, 250)"><circle cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#DC2626" stroke-width="2"/><circle cx="0" cy="0" r="4" fill="#DC2626"/></g>
+                            <g transform="translate(485, 260)"><circle cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#DC2626" stroke-width="2"/><circle cx="0" cy="0" r="4" fill="#DC2626"/></g>
+                            <g transform="translate(720, 220)"><circle cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#DC2626" stroke-width="2"/><circle cx="0" cy="0" r="4" fill="#DC2626"/></g>
+                            <g transform="translate(630, 475)"><circle cx="0" cy="0" r="8" fill="#FFFFFF" stroke="#DC2626" stroke-width="2"/><circle cx="0" cy="0" r="4" fill="#DC2626"/></g>
+
+                            <!-- Foam (Yellow F) -->
+                            <g transform="translate(370, 250)"><circle cx="0" cy="0" r="8" fill="#FFD000" stroke="#0F172A" stroke-width="1.5"/><text x="0" y="3" font-family="Kanit" font-size="7.5" font-weight="900" fill="#0F172A" text-anchor="middle">F</text></g>
+                            <g transform="translate(800, 465)"><circle cx="0" cy="0" r="8" fill="#FFD000" stroke="#0F172A" stroke-width="1.5"/><text x="0" y="3" font-family="Kanit" font-size="7.5" font-weight="900" fill="#0F172A" text-anchor="middle">F</text></g>
+                        </g>
+
+                        <!-- ALARMS & HOSE REELS (Vibrant Red) -->
+                        <g id="layerAlarms">
+                            <g transform="translate(360, 142)"><circle cx="0" cy="0" r="9" fill="#DC2626" stroke="#0F172A" stroke-width="1.5"/><text x="0" y="3.5" font-family="FontAwesome" font-size="8" fill="#FFFFFF" text-anchor="middle"></text></g>
+                            <g transform="translate(360, 268)"><circle cx="0" cy="0" r="9" fill="#DC2626" stroke="#0F172A" stroke-width="1.5"/><text x="0" y="3.5" font-family="FontAwesome" font-size="8" fill="#FFFFFF" text-anchor="middle"></text></g>
+                            <g transform="translate(500, 260)"><circle cx="0" cy="0" r="9" fill="#DC2626" stroke="#0F172A" stroke-width="1.5"/><text x="0" y="3.5" font-family="FontAwesome" font-size="8" fill="#FFFFFF" text-anchor="middle"></text></g>
+                            <g transform="translate(775, 160)"><circle cx="0" cy="0" r="9" fill="#DC2626" stroke="#0F172A" stroke-width="1.5"/><text x="0" y="3.5" font-family="FontAwesome" font-size="8" fill="#FFFFFF" text-anchor="middle"></text></g>
+                            <g transform="translate(490, 420)"><circle cx="0" cy="0" r="9" fill="#DC2626" stroke="#0F172A" stroke-width="1.5"/><text x="0" y="3.5" font-family="FontAwesome" font-size="8" fill="#FFFFFF" text-anchor="middle"></text></g>
+                            <g transform="translate(775, 455)"><circle cx="0" cy="0" r="9" fill="#DC2626" stroke="#0F172A" stroke-width="1.5"/><text x="0" y="3.5" font-family="FontAwesome" font-size="8" fill="#FFFFFF" text-anchor="middle"></text></g>
+
+                            <!-- Hose Reels (Numbered) -->
+                            <g transform="translate(380, 90)"><circle cx="0" cy="0" r="7.5" fill="#EF4444" stroke="#0F172A" stroke-width="1.2"/><text x="0" y="2.5" font-family="Kanit" font-size="7" font-weight="900" fill="#FFFFFF" text-anchor="middle">1</text></g>
+                            <g transform="translate(420, 90)"><circle cx="0" cy="0" r="7.5" fill="#EF4444" stroke="#0F172A" stroke-width="1.2"/><text x="0" y="2.5" font-family="Kanit" font-size="7" font-weight="900" fill="#FFFFFF" text-anchor="middle">2</text></g>
+                            <g transform="translate(460, 90)"><circle cx="0" cy="0" r="7.5" fill="#EF4444" stroke="#0F172A" stroke-width="1.2"/><text x="0" y="2.5" font-family="Kanit" font-size="7" font-weight="900" fill="#FFFFFF" text-anchor="middle">3</text></g>
+                            <g transform="translate(545, 240)"><circle cx="0" cy="0" r="7.5" fill="#EF4444" stroke="#0F172A" stroke-width="1.2"/><text x="0" y="2.5" font-family="Kanit" font-size="7" font-weight="900" fill="#FFFFFF" text-anchor="middle">8</text></g>
+                            <g transform="translate(680, 355)"><circle cx="0" cy="0" r="7.5" fill="#EF4444" stroke="#0F172A" stroke-width="1.2"/><text x="0" y="2.5" font-family="Kanit" font-size="7" font-weight="900" fill="#FFFFFF" text-anchor="middle">9</text></g>
+                            <g transform="translate(820, 410)"><circle cx="0" cy="0" r="7.5" fill="#EF4444" stroke="#0F172A" stroke-width="1.2"/><text x="0" y="2.5" font-family="Kanit" font-size="7" font-weight="900" fill="#FFFFFF" text-anchor="middle">10</text></g>
+                            <g transform="translate(650, 555)"><circle cx="0" cy="0" r="7.5" fill="#EF4444" stroke="#0F172A" stroke-width="1.2"/><text x="0" y="2.5" font-family="Kanit" font-size="7" font-weight="900" fill="#FFFFFF" text-anchor="middle">11</text></g>
+                        </g>
+
+                        <!-- PIN: YOU ARE HERE (Eye-Catching Orange & Amber Radar) -->
+                        <g id="youAreHerePin" transform="translate(655, 132)">
+                            <circle cx="0" cy="0" r="26" fill="#FF5400" opacity="0.3" class="radar-beacon"/>
+                            <circle cx="0" cy="0" r="14" fill="#FF5400" opacity="0.5"/>
+                            <circle cx="0" cy="0" r="6" fill="#FFD000" stroke="#0F172A" stroke-width="2"/>
+                            
+                            <g transform="translate(-48, -38)">
+                                <rect x="0" y="0" width="96" height="24" rx="5" fill="#FF5400" stroke="#0F172A" stroke-width="1.8" filter="drop-shadow(0 3px 5px rgba(0,0,0,0.3))"/>
+                                <text x="48" y="12" font-family="Kanit" font-size="9" font-weight="900" fill="#FFFFFF" text-anchor="middle">คุณอยู่ที่นี่</text>
+                                <text x="48" y="21" font-family="Kanit" font-size="7.5" font-weight="bold" fill="#FFD000" text-anchor="middle">YOU ARE HERE</text>
+                                <polygon points="48,24 43,30 53,30" fill="#FF5400"/>
+                            </g>
+                        </g>
+
+                    </svg>
+
+                </div>
+
+                <!-- Footer Quick-Legend inside Map Frame -->
+                <div class="pt-1 border-t-2 border-slate-200 flex flex-wrap items-center justify-between text-[9px] sm:text-[10px] font-kanit font-bold shrink-0">
+                    <div class="flex items-center gap-2 sm:gap-3 text-charcoal-700">
+                        <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-brandGreen"></span> ทางออก EXIT</span>
+                        <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-brandOrange-500"></span> ถังดับเพลิง</span>
+                        <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-600"></span> สัญญาณแจ้งเหตุ</span>
+                    </div>
+                    <span class="text-brandCyan-dark"><i class="fa-solid fa-hand-pointer text-brandOrange-500 mr-1 animate-bounce"></i>คลิกที่เบย์ในแผนผังเพื่อย้ายตำแหน่งหมุด</span>
+                </div>
+
+            </main>
+
+            <!-- RIGHT COLUMN: 6 EVACUATION STEPS + ASSEMBLY ZONE BANNER (~25% / 3 Cols) -->
+            <aside class="col-span-3 flex flex-col justify-between gap-1.5 sm:gap-2 overflow-hidden">
+                
+                <!-- 1. SIX EVACUATION STEPS (Bright White Cards with Vivid Orange Number Badges) -->
+                <div class="bg-white border-2 border-brandCyan rounded-xl p-2 sm:p-2.5 shadow-sm flex flex-col justify-between flex-1">
+                    <div class="flex items-center justify-between pb-1 mb-1 border-b-2 border-cyan-100 shrink-0">
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-6 h-6 rounded-lg bg-brandCyan text-white flex items-center justify-center text-xs font-black shadow-sm">
+                                <i class="fa-solid fa-shoe-prints"></i>
+                            </span>
+                            <div>
+                                <h3 class="font-kanit font-extrabold text-charcoal-900 text-xs sm:text-sm leading-none">ขั้นตอนการอพยพหนีไฟ</h3>
+                                <p class="text-[8px] sm:text-[9px] text-brandCyan-dark font-bold font-kanit">6 ลำดับปฏิบัติการเพื่อความปลอดภัย</p>
+                            </div>
+                        </div>
+                        <span class="bg-cyan-100 text-brandCyan-dark font-kanit text-[8px] font-black px-1.5 py-0.2 rounded border border-cyan-300">สำคัญ</span>
+                    </div>
+
+                    <div class="space-y-1 font-kanit flex-1 justify-center flex flex-col">
+                        <!-- Step 1 -->
+                        <div class="flex items-center gap-2 p-1 rounded-lg bg-slate-50 border border-slate-200">
+                            <span class="w-5 h-5 rounded-md bg-gradient-to-r from-brandOrange-gradientStart to-brandOrange-gradientEnd text-white font-black flex items-center justify-center shrink-0 text-[10px] shadow-sm">1</span>
+                            <span class="text-charcoal-800 font-bold text-[9px] sm:text-[10px]">ได้ยินสัญญาณเตือน หยุดทำงานทันที</span>
+                        </div>
+                        <!-- Step 2 -->
+                        <div class="flex items-center gap-2 p-1 rounded-lg bg-slate-50 border border-slate-200">
+                            <span class="w-5 h-5 rounded-md bg-gradient-to-r from-brandOrange-gradientStart to-brandOrange-gradientEnd text-white font-black flex items-center justify-center shrink-0 text-[10px] shadow-sm">2</span>
+                            <span class="text-charcoal-800 font-bold text-[9px] sm:text-[10px]">ตั้งสติและปฏิบัติตามคำสั่งผู้นำอพยพ</span>
+                        </div>
+                        <!-- Step 3 -->
+                        <div class="flex items-center gap-2 p-1 rounded-lg bg-slate-50 border border-slate-200">
+                            <span class="w-5 h-5 rounded-md bg-gradient-to-r from-brandOrange-gradientStart to-brandOrange-gradientEnd text-white font-black flex items-center justify-center shrink-0 text-[10px] shadow-sm">3</span>
+                            <span class="text-charcoal-800 font-bold text-[9px] sm:text-[10px]">เดินตามเส้นทางหนีไฟที่กำหนดไว้</span>
+                        </div>
+                        <!-- Step 4 (Warning: NO ELEVATOR) -->
+                        <div class="flex items-center gap-2 p-1 rounded-lg bg-red-100 border-2 border-red-500">
+                            <span class="w-5 h-5 rounded-md bg-red-600 text-white font-black flex items-center justify-center shrink-0 text-[10px] shadow-sm">4</span>
+                            <span class="text-red-700 font-black text-[9px] sm:text-[10px]"><i class="fa-solid fa-ban text-red-600 mr-0.5"></i> ห้ามใช้ลิฟต์โดยสารเด็ดขาด</span>
+                        </div>
+                        <!-- Step 5 -->
+                        <div class="flex items-center gap-2 p-1 rounded-lg bg-slate-50 border border-slate-200">
+                            <span class="w-5 h-5 rounded-md bg-gradient-to-r from-brandOrange-gradientStart to-brandOrange-gradientEnd text-white font-black flex items-center justify-center shrink-0 text-[10px] shadow-sm">5</span>
+                            <span class="text-charcoal-800 font-bold text-[9px] sm:text-[10px]">เดินมุ่งตรงไปยังจุดรวมพล</span>
+                        </div>
+                        <!-- Step 6 -->
+                        <div class="flex items-center gap-2 p-1 rounded-lg bg-slate-50 border border-slate-200">
+                            <span class="w-5 h-5 rounded-md bg-gradient-to-r from-brandOrange-gradientStart to-brandOrange-gradientEnd text-white font-black flex items-center justify-center shrink-0 text-[10px] shadow-sm">6</span>
+                            <span class="text-charcoal-800 font-bold text-[9px] sm:text-[10px]">รอตรวจนับยอดพนักงานและรายงานตัว</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. ASSEMBLY POINT ZONE 1 BANNER (Vibrant Green Banner) -->
+                <div class="bg-white border-2 border-brandGreen rounded-xl p-2 sm:p-2.5 shadow-sm flex items-center gap-2 shrink-0">
+                    <div class="w-16 sm:w-20 bg-brandGreen text-white rounded-lg p-1.5 flex flex-col items-center justify-center font-kanit font-black border-2 border-emerald-600 shadow shrink-0">
+                        <span class="text-[8px] uppercase tracking-tighter leading-none text-emerald-100">จุดรวมพล</span>
+                        <span class="text-sm sm:text-base leading-tight text-white">ZONE 1</span>
+                        <i class="fa-solid fa-users text-sm mt-0.5 text-yellow-300"></i>
+                    </div>
+                    <div class="flex-1 text-[9px] sm:text-[10px] font-kanit leading-tight">
+                        <p class="font-black text-charcoal-900 text-[10px] sm:text-[11px] mb-0.5">ลานรวมพลหลัก (North-West)</p>
+                        <p class="text-charcoal-600 font-medium">บริเวณลานโล่งด้านหน้าโรงงาน ปลอดภัยจากรัศมีเพลิงไหม้และควันพิษ</p>
+                    </div>
+                </div>
+
+                <!-- 3. DETAILED SYMBOL LEGEND (Bright White Container) -->
+                <div class="bg-white border-2 border-slate-300 rounded-xl p-1.5 sm:p-2 shadow-sm shrink-0 font-kanit text-[8px] sm:text-[9px]">
+                    <div class="grid grid-cols-2 gap-1 text-charcoal-800 font-bold">
+                        <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-brandGreen text-white flex items-center justify-center text-[8px]"><i class="fa-solid fa-users"></i></span> จุดรวมพล</div>
+                        <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-brandOrange-500 text-white flex items-center justify-center text-[8px]"><i class="fa-solid fa-location-dot"></i></span> คุณอยู่ที่นี่</div>
+                        <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-red-600 text-white flex items-center justify-center text-[8px]"><i class="fa-solid fa-bell"></i></span> กระดิ่งแจ้งเหตุ</div>
+                        <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-red-600 text-white flex items-center justify-center text-[8px]"><i class="fa-solid fa-circle-dot"></i></span> สายฉีดน้ำดับเพลิง</div>
+                        <div class="flex items-center gap-1"><span class="w-4 h-4 rounded border-2 border-red-600 flex items-center justify-center bg-white"><span class="w-1.5 h-1.5 rounded-full bg-red-600"></span></span> ถังดับเพลิง CO2</div>
+                        <div class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-brandYellow text-charcoal-900 font-black flex items-center justify-center text-[8px] border border-amber-400">F</span> ถังดับเพลิงโฟม/ฮาโลตรอน</div>
+                    </div>
+                </div>
+
+            </aside>
+
+        </div>
+
+        <!-- FOOTER: LEGAL COMPLIANCE IN 16:9 (High Legibility Bright Safety Yellow Accent) -->
+        <footer class="bg-white border-t-2 border-charcoal-900 py-1.5 px-3 sm:px-4 text-center shrink-0">
+            <p class="font-kanit text-[9px] sm:text-[11px] font-black text-charcoal-900 tracking-wide leading-tight">
+                <i class="fa-solid fa-scale-balanced text-brandOrange-500 mr-1"></i>
+                ตามกฎกระทรวงกำหนดมาตรฐานในการบริหาร จัดการ และดำเนินการด้านความปลอดภัย อาชีวอนามัย และสภาพแวดล้อมในการทำงานเกี่ยวกับการป้องกันและระงับอัคคีภัย พ.ศ. ๒๕๕๕ (ข้อ ๓)
+            </p>
+            <p class="font-prompt text-[8px] sm:text-[9px] text-charcoal-600 font-semibold mt-0.5 leading-tight">
+                "ข้อ ๓ ในสถานประกอบกิจการทุกแห่ง ให้นายจ้างจัดทำป้ายข้อปฏิบัติเกี่ยวกับการดับเพลิงและการอพยพหนีไฟ และปิดประกาศให้เห็นได้อย่างชัดเจน"
+            </p>
+            <div class="hazard-stripe-sm h-1.5 sm:h-2 w-full border-t border-charcoal-900 mt-1"></div>
+        </footer>
+
+    </main>
+
+    <!-- Custom Modal for Notifications (No Alert) -->
+    <div id="customModal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 opacity-0 pointer-events-none transition duration-200">
+        <div class="bg-white border-2 border-charcoal-900 rounded-2xl p-5 max-w-sm w-full mx-4 text-center shadow-2xl">
+            <div class="w-12 h-12 bg-emerald-100 text-brandGreen rounded-full flex items-center justify-center mx-auto mb-2 text-2xl border-2 border-brandGreen">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h4 id="modalTitle" class="font-kanit font-black text-charcoal-900 text-base">บันทึกข้อมูลสำเร็จ</h4>
+            <p id="modalDesc" class="font-prompt text-xs text-charcoal-600 mt-1 mb-4 font-medium">ข้อมูลผู้นำอพยพหนีไฟได้รับการอัปเดตลงบนป้ายเรียบร้อยแล้ว</p>
+            <button onclick="closeModal()" class="w-full py-2 bg-gradient-to-r from-brandOrange-gradientStart to-brandOrange-gradientEnd text-white font-kanit font-black rounded-lg text-xs shadow hover:brightness-105 active:scale-95 transition">
+                รับทราบ
+            </button>
+        </div>
+    </div>
+
+    <!-- Interactive Floor Plan & Warden Script -->
+    <script>
+        let isEditing = false;
+
+        // Interactive "You Are Here" pin relocated on click
+        function setYouAreHere(x, y, bayName) {
+            const pin = document.getElementById('youAreHerePin');
+            pin.setAttribute('transform', `translate(${x}, ${y})`);
+            
+            const badge = document.getElementById('currentLocationBadge');
+            badge.innerText = `ตำแหน่ง: ${bayName}`;
+        }
+
+        // Fullscreen Toggle for 16:9 Display
+        function toggleFullScreen() {
+            const elem = document.getElementById('boardContainer');
+            if (!document.fullscreenElement) {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // Layer Filter toggler
+        function setLayerFilter(type) {
+            const routes = document.getElementById('layerRoutes');
+            const extinguishers = document.getElementById('layerExtinguishers');
+            const alarms = document.getElementById('layerAlarms');
+            const exits = document.getElementById('layerExits');
+
+            const btnAll = document.getElementById('filter-all');
+            const btnRoutes = document.getElementById('filter-routes');
+            const btnExtinguishers = document.getElementById('filter-extinguishers');
+            const btnAlarms = document.getElementById('filter-alarms');
+
+            const allBtns = [btnAll, btnRoutes, btnExtinguishers, btnAlarms];
+            allBtns.forEach(btn => {
+                btn.className = "filter-btn px-2.5 py-0.5 rounded text-charcoal-700 hover:text-charcoal-900 transition";
+            });
+
+            if (type === 'all') {
+                btnAll.className = "filter-btn px-2.5 py-0.5 rounded bg-brandCyan text-white font-bold shadow-sm transition";
+                routes.style.display = 'block';
+                extinguishers.style.display = 'block';
+                alarms.style.display = 'block';
+                exits.style.display = 'block';
+            } else if (type === 'routes') {
+                btnRoutes.className = "filter-btn px-2.5 py-0.5 rounded bg-brandCyan text-white font-bold shadow-sm transition";
+                routes.style.display = 'block';
+                exits.style.display = 'block';
+                extinguishers.style.display = 'none';
+                alarms.style.display = 'none';
+            } else if (type === 'extinguishers') {
+                btnExtinguishers.className = "filter-btn px-2.5 py-0.5 rounded bg-brandCyan text-white font-bold shadow-sm transition";
+                extinguishers.style.display = 'block';
+                routes.style.display = 'none';
+                alarms.style.display = 'none';
+                exits.style.display = 'block';
+            } else if (type === 'alarms') {
+                btnAlarms.className = "filter-btn px-2.5 py-0.5 rounded bg-brandCyan text-white font-bold shadow-sm transition";
+                alarms.style.display = 'block';
+                extinguishers.style.display = 'none';
+                routes.style.display = 'none';
+                exits.style.display = 'block';
+            }
+        }
+
+        // Editable Warden Form
+        function toggleEditMode() {
+            isEditing = !isEditing;
+            
+            const dispName = document.getElementById('dispName');
+            const dispPhone = document.getElementById('dispPhone');
+            const dispDept = document.getElementById('dispDept');
+
+            const inputName = document.getElementById('inputName');
+            const inputPhone = document.getElementById('inputPhone');
+            const inputDept = document.getElementById('inputDept');
+
+            const editBtn = document.getElementById('editToggleBtn');
+            const editText = document.getElementById('editText');
+
+            if (isEditing) {
+                dispName.classList.add('hidden');
+                dispPhone.classList.add('hidden');
+                dispDept.classList.add('hidden');
+
+                inputName.classList.remove('hidden');
+                inputPhone.classList.remove('hidden');
+                inputDept.classList.remove('hidden');
+
+                editBtn.classList.remove('border-brandOrange-gradientStart', 'text-brandOrange-gradientStart', 'bg-brandOrange-50');
+                editBtn.classList.add('bg-brandGreen', 'text-white', 'border-emerald-600');
+                editText.innerText = 'บันทึกข้อมูล';
+            } else {
+                dispName.innerText = inputName.value.trim() || 'นายสมชาย มั่นคงปลอดภัย';
+                dispPhone.innerText = inputPhone.value.trim() || '02-xxx-xxxx ต่อ 101';
+                dispDept.innerText = inputDept.value.trim() || 'ฝ่ายความปลอดภัย (จป.)';
+
+                dispName.classList.remove('hidden');
+                dispPhone.classList.remove('hidden');
+                dispDept.classList.remove('hidden');
+
+                inputName.classList.add('hidden');
+                inputPhone.classList.add('hidden');
+                inputDept.classList.add('hidden');
+
+                editBtn.classList.add('border-brandOrange-gradientStart', 'text-brandOrange-gradientStart', 'bg-brandOrange-50');
+                editBtn.classList.remove('bg-brandGreen', 'text-white', 'border-emerald-600');
+                editText.innerText = 'แก้ไขผู้นำอพยพ';
+
+                openModal("บันทึกข้อมูลสำเร็จ", "อัปเดตข้อมูลผู้นำอพยพหนีไฟสำหรับ PLANT SSSC#1 เรียบร้อยแล้ว");
+            }
+        }
+
+        function openModal(title, message) {
+            const modal = document.getElementById('customModal');
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalDesc').innerText = message;
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('customModal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+    </script>
+</body>
+</html>
